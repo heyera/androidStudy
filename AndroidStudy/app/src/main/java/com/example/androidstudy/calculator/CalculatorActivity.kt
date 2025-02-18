@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,7 +33,7 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
     val resultText by viewModel.resultText.collectAsState()
 
     val buttons = listOf(
-        listOf("7", "8", "9", "지우기"),
+        listOf("7", "8", "9", "<-"),
         listOf("4", "5", "6", "/"),
         listOf("1", "2", "3", "*"),
         listOf("0", "C", "+", "-")
@@ -46,7 +47,7 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
     ) {
         // 결과 표시 창
         Text(
-            text = if (resultText.isNotEmpty()) resultText else inputText,
+            text = resultText.ifEmpty { inputText },
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
@@ -64,6 +65,7 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
+
                 row.forEach { button ->
                     Button(
                         onClick = { viewModel.handleInput(button) },
@@ -71,10 +73,22 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
                             .size(80.dp)
                             .padding(4.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (button in listOf("/", "*", "+", "-", "=")) Color.Gray else Color.DarkGray
+                            containerColor = if (button in listOf(
+                                    "/",
+                                    "*",
+                                    "+",
+                                    "-",
+                                    "="
+                                )
+                            ) Color.Gray else Color.DarkGray
                         )
                     ) {
-                        Text(text = button, fontSize = 24.sp, color = Color.White)
+                        Text(
+                            text = button,
+                            fontSize = 24.sp,
+                            color = Color.White,
+                            style = TextStyle(fontWeight = FontWeight.Bold)// 굵게 설정)
+                        )
                     }
                 }
             }
