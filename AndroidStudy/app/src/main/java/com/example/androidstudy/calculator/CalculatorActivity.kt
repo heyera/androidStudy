@@ -1,6 +1,7 @@
 package com.example.androidstudy.calculator
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -29,7 +30,6 @@ class CalculatorActivity : ComponentActivity() {
 @Composable
 fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
     val inputText by viewModel.inputText.collectAsState()
-    val resultText by viewModel.resultText.collectAsState()
 
     Column(
         modifier = Modifier
@@ -37,16 +37,16 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        DisplayScreen(inputText, resultText)
+        DisplayScreen(inputText)
         Spacer(modifier = Modifier.height(16.dp))
         ButtonGrid(viewModel)
     }
 }
 
 @Composable
-fun DisplayScreen(inputText: String, resultText: String) {
+fun DisplayScreen(inputText: String) {
     Text(
-        text = resultText.ifEmpty { inputText },
+        text = inputText,
         fontSize = 32.sp,
         fontWeight = FontWeight.Bold,
         modifier = Modifier
@@ -78,7 +78,10 @@ fun ButtonGrid(viewModel: CalculatorViewModel) {
     }
 
     Button(
-        onClick = { viewModel.handleInput("=") },
+        onClick = {
+            viewModel.handleInput("=")
+            Log.d("test", "= 누름, inputText: ${viewModel.inputText.value}") // resultText 제거
+        },
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 8.dp),
@@ -109,4 +112,3 @@ fun OperatorButton(buttonText: String, viewModel: CalculatorViewModel) {
         )
     }
 }
-
