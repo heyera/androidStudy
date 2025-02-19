@@ -16,7 +16,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.calculator.CalculatorViewModel
 
 class CalculatorActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,6 +31,34 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
     val inputText by viewModel.inputText.collectAsState()
     val resultText by viewModel.resultText.collectAsState()
 
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        DisplayScreen(inputText, resultText)
+        Spacer(modifier = Modifier.height(16.dp))
+        ButtonGrid(viewModel)
+    }
+}
+
+@Composable
+fun DisplayScreen(inputText: String, resultText: String) {
+    Text(
+        text = resultText.ifEmpty { inputText },
+        fontSize = 32.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .background(Color.LightGray, RoundedCornerShape(8.dp))
+            .padding(16.dp)
+    )
+}
+
+@Composable
+fun ButtonGrid(viewModel: CalculatorViewModel) {
     val buttons = listOf(
         listOf("7", "8", "9", "<-"),
         listOf("4", "5", "6", "/"),
@@ -39,70 +66,47 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
         listOf("0", "C", "+", "-")
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // 결과 표시 창
-        Text(
-            text = resultText.ifEmpty { inputText },
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-                .background(Color.LightGray, RoundedCornerShape(8.dp))
-                .padding(16.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // 버튼 레이아웃
-        buttons.forEach { row ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-
-                row.forEach { button ->
-                    Button(
-                        onClick = { viewModel.handleInput(button) },
-                        modifier = Modifier
-                            .size(80.dp)
-                            .padding(4.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (button in listOf(
-                                    "/",
-                                    "*",
-                                    "+",
-                                    "-",
-                                    "="
-                                )
-                            ) Color.Gray else Color.DarkGray
-                        )
-                    ) {
-                        Text(
-                            text = button,
-                            fontSize = 24.sp,
-                            color = Color.White,
-                            style = TextStyle(fontWeight = FontWeight.Bold)// 굵게 설정)
-                        )
-                    }
-                }
+    buttons.forEach { row ->
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            row.forEach { button ->
+                OperatorButton(button, viewModel)
             }
         }
+    }
 
-        // "=" 버튼 (결과 출력)
-        Button(
-            onClick = { viewModel.handleInput("=") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-        ) {
-            Text(text = "=", fontSize = 24.sp, color = Color.White)
-        }
+    Button(
+        onClick = { viewModel.handleInput("=") },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+    ) {
+        Text(text = "=", fontSize = 24.sp, color = Color.White)
     }
 }
+
+@Composable
+fun OperatorButton(buttonText: String, viewModel: CalculatorViewModel) {
+    Button(
+        onClick = { viewModel.handleInput(buttonText) },
+        modifier = Modifier
+            .size(80.dp)
+            .padding(4.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (buttonText in listOf("/", "*", "+", "-", "="))
+                Color.Gray
+            else Color.DarkGray
+        )
+    ) {
+        Text(
+            text = buttonText,
+            fontSize = 24.sp,
+            color = Color.White,
+            style = TextStyle(fontWeight = FontWeight.Bold)
+        )
+    }
+}
+
