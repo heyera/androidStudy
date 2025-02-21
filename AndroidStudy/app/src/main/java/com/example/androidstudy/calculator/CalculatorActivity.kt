@@ -6,6 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,14 +25,16 @@ class CalculatorActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            CalculatorScreen()
+            val viewModel: CalculatorViewModel = viewModel()
+            CalculatorScreen(viewModel)
         }
     }
 }
 
 @Composable
-fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
-    val inputText by viewModel.inputText.collectAsState()
+fun CalculatorScreen(viewModel: CalculatorViewModel) {
+    val inputText = viewModel.inputText.collectAsState().value
+
 
     Column(
         modifier = Modifier
@@ -45,16 +50,20 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
 
 @Composable
 fun DisplayScreen(inputText: String) {
-    Text(
-        text = inputText,
-        fontSize = 32.sp,
-        fontWeight = FontWeight.Bold,
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
             .background(Color.LightGray, RoundedCornerShape(8.dp))
-            .padding(16.dp)
-    )
+            .padding(16.dp),
+        contentAlignment = Alignment.CenterEnd
+    ) {
+        Text(
+            text = inputText,
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold
+        )
+    }
+
 }
 
 @Composable
@@ -66,13 +75,15 @@ fun ButtonGrid(viewModel: CalculatorViewModel) {
         listOf("0", "C", "+", "-")
     )
 
-    buttons.forEach { row ->
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            row.forEach { button ->
-                OperatorButton(button, viewModel)
+    LazyColumn {
+        items(buttons) { row ->
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                items(row) { button ->
+                    OperatorButton(button, viewModel)
+                }
             }
         }
     }
