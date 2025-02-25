@@ -97,4 +97,7 @@ dependencies {
 
     // 계산 라이브러리
     implementation ("net.objecthunter:exp4j:0.4.8")
+
+    // DataStore
+    implementation ("androidx.datastore:datastore-preferences:1.0.0")
 }

@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidstudy.calculator.CalculatorActivity
+import com.example.androidstudy.setting.SettingActivity
 
 
 class MainActivity : ComponentActivity() {
@@ -32,8 +33,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         Log.d("test", "mainStart")
         setContent {
-
-            val viewModel: MainViewModel = viewModel()
 
             Surface(
                 modifier = Modifier
@@ -55,6 +54,11 @@ class MainActivity : ComponentActivity() {
                         context = context,
                         text = "계산기",
                         destination = CalculatorActivity::class.java
+                    )
+                    NavigationButton(
+                        context = context,
+                        text = "설정 화면",
+                        destination = SettingActivity::class.java
                     )
                 }
             }
