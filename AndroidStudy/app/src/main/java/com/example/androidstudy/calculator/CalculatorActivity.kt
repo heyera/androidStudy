@@ -75,30 +75,37 @@ fun ButtonGrid(viewModel: CalculatorViewModel) {
         listOf("0", "C", "+", "-")
     )
 
-    LazyColumn {
-        items(buttons) { row ->
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                items(row) { button ->
-                    OperatorButton(button, viewModel)
+    Column(
+        modifier = Modifier.fillMaxSize()
+    )
+    {
+
+
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            items(buttons) { row ->
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    items(row) { button ->
+                        OperatorButton(button, viewModel)
+                    }
                 }
             }
         }
-    }
 
-    Button(
-        onClick = {
-            viewModel.handleInput("=")
-            Log.d("test", "= 누름, inputText: ${viewModel.inputText.value}") // resultText 제거
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-    ) {
-        Text(text = "=", fontSize = 24.sp, color = Color.White)
+        Button(
+            onClick = {
+                viewModel.handleInput("=")
+                Log.d("test", "= 누름, inputText: ${viewModel.inputText.value}")
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+        ) {
+            Text(text = "=", fontSize = 24.sp, color = Color.White)
+        }
     }
 }
 
