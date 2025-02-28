@@ -16,9 +16,18 @@ class SettingViewModel @Inject constructor(
     val exampleSwitch = settingDataStore.exampleSwitchFlow
         .stateIn(viewModelScope, SharingStarted.Lazily, false)
 
+    val alarmSetting = settingDataStore.alarmSettingFlow
+        .stateIn(viewModelScope, SharingStarted.Lazily, 0)
+
     fun saveExampleSwitch(state: Boolean) {
         viewModelScope.launch {
             settingDataStore.saveExampleSwitchState(state)
+        }
+    }
+
+    fun saveAlarmSetting(option: Int) {
+        viewModelScope.launch {
+            settingDataStore.saveAlarmSetting(option)
         }
     }
 }
