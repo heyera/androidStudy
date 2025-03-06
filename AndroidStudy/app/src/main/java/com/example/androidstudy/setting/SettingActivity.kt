@@ -1,11 +1,14 @@
 package com.example.androidstudy.setting
 
 import android.content.Context
+import android.media.MediaPlayer
 import android.media.Ringtone
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.widget.Toast
@@ -31,6 +34,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.androidstudy.Manifest
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -62,8 +66,7 @@ fun MainScreen(navController: NavController, settingsViewModel: SettingViewModel
     val alarmSetting by settingsViewModel.alarmSetting.collectAsState(initial = 0)
     val appContext = LocalContext.current
 
-    /*
-    // 🔹 알람 권한 요청
+    // 알람 권한 요청
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted ->
@@ -79,7 +82,6 @@ fun MainScreen(navController: NavController, settingsViewModel: SettingViewModel
             //notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
-*/
 
 
     Scaffold(
@@ -123,6 +125,15 @@ fun triggerAlarm(context: Context, setting: Int) {
         null
     }
 
+    ringtone?.stop()
+
+    val mediaPlayer = MediaPlayer().apply {
+        setDataSource(context, ringtoneUri)
+        prepare()
+    }
+    val duration = mediaPlayer.duration // 알람 소리의 길이 가져오기 (밀리초 단위)
+    mediaPlayer.release()
+
     when (setting) {
         0 -> { // 진동
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -139,6 +150,7 @@ fun triggerAlarm(context: Context, setting: Int) {
 
         1 -> { // 알람음
             ringtone?.play()
+            Handler(Looper.getMainLooper()).postDelayed({ ringtone?.stop()}, duration.toLong())
         }
 
         2 -> { // 둘 다
@@ -153,6 +165,7 @@ fun triggerAlarm(context: Context, setting: Int) {
                 vibrator?.vibrate(500)
             }
             ringtone?.play()
+            Handler(Looper.getMainLooper()).postDelayed({ ringtone?.stop()}, duration.toLong())
         }
     }
 }
