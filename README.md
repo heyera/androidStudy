@@ -10,10 +10,10 @@ Jetpack Compose, DataStore, Hilt, ViewModel 등의 최신 안드로이드 아키
 </br>
 
 ## 📌 목차
-- [계산기](#-계산기)
-- [설정 데이터 저장 기능](#-설정-데이터-저장-기능)
-- [기술 스택](#-기술-스택)
-- [프로젝트 실행 방법](#-프로젝트-실행-방법)
+- [계산기](#계산기)
+- [설정 데이터 저장 기능](#설정-데이터-저장-기능)
+- [기술 스택](#기술-스택)
+- [프로젝트 실행 방법](#프로젝트-실행-방법)
 
 </br>
 
@@ -21,7 +21,7 @@ Jetpack Compose, DataStore, Hilt, ViewModel 등의 최신 안드로이드 아키
 
 </br>
 
-## 📱 계산기
+## 계산기
 계산기 기능에서는 사용자의 입력을 받아 연산을 수행하고, 계산 기록을 저장 및 관리합니다.
 
 ### 🔹 사용된 기술 및 패턴
@@ -38,7 +38,7 @@ Jetpack Compose, DataStore, Hilt, ViewModel 등의 최신 안드로이드 아키
 </br>
 
 
-## ⚙️ 설정 데이터 저장 기능
+## 설정 데이터 저장 기능
 설정 화면에서는 사용자의 기본 설정(스위치, 알람 설정 등)을 저장하고 관리할 수 있습니다.
 
 ### 🔹 사용된 기술 및 패턴
@@ -55,7 +55,7 @@ Jetpack Compose, DataStore, Hilt, ViewModel 등의 최신 안드로이드 아키
 
 </br>
 
-## 🛠️ 기술 스택
+## 기술 스택
 - **언어:** Kotlin
 - **UI:** Jetpack Compose, Material 3
 - **아키텍처:** MVVM (Model-View-ViewModel)
@@ -71,7 +71,7 @@ Jetpack Compose, DataStore, Hilt, ViewModel 등의 최신 안드로이드 아키
 
 </br>
 
-## 🚀 프로젝트 실행 방법
+## 프로젝트 실행 방법
 1. 프로젝트를 클론합니다.
    ```sh
    git clone https://github.com/your-repository/android-study.git
