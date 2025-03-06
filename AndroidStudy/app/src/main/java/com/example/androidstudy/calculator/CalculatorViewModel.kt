@@ -1,17 +1,34 @@
 package com.example.androidstudy.calculator
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import net.objecthunter.exp4j.ExpressionBuilder
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CalculatorViewModel : ViewModel() {
+@HiltViewModel
+class CalculatorViewModel @Inject constructor(
+    private val calculationHistoryDataStore: CalculationHistoryDataStore
+) : ViewModel() {
 
     private val _inputText = MutableStateFlow("")
     val inputText = _inputText.asStateFlow()
 
 
     private var lastOperator = false // 마지막 입력이 연산자인지 확인
+
+    private val _history = MutableStateFlow<List<String>>(emptyList())
+    val history = _history.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            calculationHistoryDataStore.historyFlow.collect { historyList ->
+                _history.value = historyList
+            }
+        }
+    }
 
     // 입력 처리
     fun handleInput(value: String) {
@@ -50,17 +67,15 @@ class CalculatorViewModel : ViewModel() {
     // 수식 계산
     private fun calculateResult() {
         try {
-            var expressionStr = _inputText.value
 
-            if (expressionStr.isNotEmpty() && expressionStr.last() in listOf('+', '-', '*', '/')) {
-                expressionStr = expressionStr.dropLast(1)
-            }
-
-            val expression = ExpressionBuilder(expressionStr).build()
-            val result = expression.evaluate().toInt()
-
+            val expression = _inputText.value   //  수식 저장
+            val result = net.objecthunter.exp4j.ExpressionBuilder(expression).build().evaluate().toInt()
             _inputText.value = result.toString()
             lastOperator = false
+
+            viewModelScope.launch {
+                saveCalculation(expression, result.toString()) //수식과 결과 함께 저장
+            }
 
         } catch (e: Exception) {
             _inputText.value = "오류"
@@ -73,7 +88,12 @@ class CalculatorViewModel : ViewModel() {
 
         if (_inputText.value.isNotEmpty()) {
             _inputText.value = _inputText.value.dropLast(1)
-            lastOperator = _inputText.value.isNotEmpty() && _inputText.value.last() in listOf('+', '-', '*', '/')
+            lastOperator = _inputText.value.isNotEmpty() && _inputText.value.last() in listOf(
+                '+',
+                '-',
+                '*',
+                '/'
+            )
         }
     }
 
@@ -81,5 +101,14 @@ class CalculatorViewModel : ViewModel() {
     private fun clearAll() {
         _inputText.value = ""
         lastOperator = false
+    }
+
+    private suspend fun saveCalculation(expression: String, result: String) {
+        val fullCalculation = "$expression\n = $result"
+        calculationHistoryDataStore.addCalculation(fullCalculation)
+    }
+
+    suspend fun clearHistory() {
+        calculationHistoryDataStore.clearHistory()
     }
 }

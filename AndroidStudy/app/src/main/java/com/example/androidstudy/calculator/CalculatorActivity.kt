@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,7 +22,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class CalculatorActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,32 +47,101 @@ fun CalculatorScreen(viewModel: CalculatorViewModel) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        DisplayScreen(inputText)
+        DisplayScreen(inputText, viewModel)
         Spacer(modifier = Modifier.height(16.dp))
         ButtonGrid(viewModel)
     }
 }
 
 @Composable
-fun DisplayScreen(inputText: String) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.LightGray, RoundedCornerShape(8.dp))
-            .padding(16.dp),
-        contentAlignment = Alignment.CenterEnd
-    ) {
-        Text(
-            text = inputText,
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold
-        )
-    }
+fun DisplayScreen(inputText: String, viewModel: CalculatorViewModel) {
+    val coroutineScope = rememberCoroutineScope()
+    val historyList by viewModel.history.collectAsState()
+    var showHistory by remember { mutableStateOf(false) }
 
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .background(Color.LightGray),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // 왼쪽 아이콘 버튼
+            IconButton(
+                onClick = { showHistory = !showHistory },
+                modifier = Modifier.size(48.dp) // 아이콘 크기 조정
+            ) {
+                Icon(
+                    imageVector = if (!showHistory) Icons.Outlined.Info else Icons.Outlined.Close,
+                    contentDescription = "히스토리 보기"
+                )
+            }
+
+            Spacer(modifier = Modifier.width(4.dp))
+
+            // 오른쪽 입력된 숫자 표시
+            Text(
+                text = inputText,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(8.dp),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+            )
+        }
+
+        if (showHistory) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .weight(1f) // 비율 조정
+            ) {
+
+                Text(
+                    text = "계산 기록",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+
+                LazyColumn(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    items(historyList) { historyItem ->
+                        Text(
+                            text = historyItem,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            fontSize = 16.sp
+                        )
+                    }
+                }
+
+                Button(
+                    onClick = { coroutineScope.launch { viewModel.clearHistory() } },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                ) {
+                    Text(text = "기록 삭제", color = Color.White)
+                }
+            }
+        }
+    }
 }
 
 @Composable
 fun ButtonGrid(viewModel: CalculatorViewModel) {
+
+    val coroutineScope = rememberCoroutineScope()
+
     val buttons = listOf(
         listOf("7", "8", "9", "<-"),
         listOf("4", "5", "6", "/"),
