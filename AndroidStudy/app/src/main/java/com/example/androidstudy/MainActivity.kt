@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidstudy.calculator.CalculatorActivity
+import com.example.androidstudy.lazyLists.LazyListsActivity
 import com.example.androidstudy.setting.SettingActivity
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -60,6 +61,11 @@ class MainActivity : ComponentActivity() {
                         context = context,
                         text = "설정 화면",
                         destination = SettingActivity::class.java
+                    )
+                    NavigationButton(
+                        context = context,
+                        text = "Lazy 리스트",
+                        destination = LazyListsActivity::class.java
                     )
                 }
             }

@@ -24,6 +24,9 @@
         <activity
             android:name=".setting.SettingActivity"
             android:exported="false" />
+        <activity
+            android:name=".lazyLists.LazyListsActivity"
+            android:exported="false"/>
 
         <activity
             android:name=".MainActivity"
