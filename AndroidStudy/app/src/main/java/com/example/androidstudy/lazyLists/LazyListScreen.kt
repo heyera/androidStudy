@@ -35,9 +35,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -168,8 +170,11 @@ fun LazyColumnList(items: List<CardItem>, modifier: Modifier = Modifier) {
             .fillMaxHeight(0.5f)
             .fillMaxWidth()
     ) {
-        items(items.reversed()) { item ->
-            ItemCard(item = item, modifier = Modifier.fillMaxWidth())
+        items(items) { item ->
+            ItemCard(
+                item = item,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
@@ -190,9 +195,15 @@ fun LazyRowList(items: List<CardItem>, modifier: Modifier = Modifier) {
 @Composable
 fun ItemCard(
     item: CardItem,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: LazyListsViewModel = viewModel()
 ) {
     var showDialog by remember { mutableStateOf(false) }
+    var editTitle by remember { mutableStateOf(item.title) }
+    var editContent by remember { mutableStateOf(item.content) }
+    var isEditMode by remember { mutableStateOf(false) }
+
+    val focusRequester = remember { FocusRequester() }
 
     Card(
         modifier = modifier
@@ -209,14 +220,59 @@ fun ItemCard(
 
     if (showDialog) {
         AlertDialog(
-            onDismissRequest = { showDialog = false },
+            onDismissRequest = {
+                showDialog = false
+                isEditMode = false
+            },
             confirmButton = {
-                TextButton(onClick = { showDialog = false }) {
-                    Text("닫기")
+                if (isEditMode) {
+                    TextButton(onClick = {
+                        viewModel.updateItem(item.id, editTitle, editContent)
+                        showDialog = false
+                        isEditMode = false
+                    }) {
+                        Text("확인")
+                    }
+                } else {
+                    TextButton(onClick = {
+                        isEditMode = true
+                    }) {
+                        Text("수정")
+                    }
+                    TextButton(onClick = {
+                        viewModel.deleteItem(item.id)
+                        showDialog = false
+                    }) {
+                        Text("삭제", color = Color.Red)
+                    }
                 }
             },
-            title = { Text(item.title) },
-            text = { Text(item.content) }
+            title = { Text("항목 보기") },
+            text = {
+                Column {
+                    OutlinedTextField(
+                        value = editTitle,
+                        onValueChange = {
+                            editTitle = it.replace("\n", "")
+                        },
+                        label = { Text("제목") },
+                        enabled = isEditMode,
+                        modifier = if (isEditMode) Modifier.focusRequester(focusRequester) else Modifier
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = editContent,
+                        onValueChange = { editContent = it },
+                        label = { Text("내용") },
+                        enabled = isEditMode
+                    )
+                }
+            }
         )
+        if (isEditMode) {
+            LaunchedEffect(Unit) {
+                focusRequester.requestFocus()
+            }
+        }
     }
 }
