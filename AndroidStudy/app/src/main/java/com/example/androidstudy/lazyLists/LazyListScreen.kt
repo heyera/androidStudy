@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
@@ -33,6 +35,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 
 
 @Composable
@@ -84,6 +92,10 @@ fun LazyListsScreen(
             )
         }
         if (showDialog) {
+            val keyboardController = LocalSoftwareKeyboardController.current
+            val focusRequesterTitle = remember { FocusRequester() }
+            val focusRequesterContent = remember { FocusRequester() }
+
             AlertDialog(
                 onDismissRequest = { showDialog = false },
                 confirmButton = {
@@ -92,6 +104,7 @@ fun LazyListsScreen(
                         inputTitle = ""
                         inputContent = ""
                         showDialog = false
+                        keyboardController?.hide()
                     }) {
                         Text("확인")
                     }
@@ -106,18 +119,43 @@ fun LazyListsScreen(
                     Column {
                         OutlinedTextField(
                             value = inputTitle,
-                            onValueChange = { inputTitle = it },
-                            label = { Text("제목") }
+                            onValueChange = {
+                                inputTitle = it.replace(Regex("[\\n\\r\\t\\u2028]"), "")
+                            },
+                            label = { Text("제목") },
+                            modifier = Modifier.focusRequester(focusRequesterTitle),
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Next
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onNext = {
+                                    focusRequesterContent.requestFocus()
+                                }
+                            )
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         OutlinedTextField(
                             value = inputContent,
                             onValueChange = { inputContent = it },
-                            label = { Text("내용") }
+                            label = { Text("내용") },
+                            modifier = Modifier.focusRequester(focusRequesterContent),
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    viewModel.addItem(inputTitle, inputContent)
+                                    inputTitle = ""
+                                    inputContent = ""
+                                    showDialog = false
+                                    keyboardController?.hide()
+                                }
+                            )
                         )
                     }
                 }
             )
+
         }
     }
 }
