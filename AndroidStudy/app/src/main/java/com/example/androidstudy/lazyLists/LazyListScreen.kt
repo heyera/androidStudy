@@ -219,6 +219,11 @@ fun ItemCard(
     }
 
     if (showDialog) {
+
+        val keyboardController = LocalSoftwareKeyboardController.current
+        val focusRequesterTitle = remember { FocusRequester() }
+        val focusRequesterContent = remember { FocusRequester() }
+
         AlertDialog(
             onDismissRequest = {
                 showDialog = false
@@ -257,14 +262,33 @@ fun ItemCard(
                         },
                         label = { Text("제목") },
                         enabled = isEditMode,
-                        modifier = if (isEditMode) Modifier.focusRequester(focusRequester) else Modifier
+                        modifier = if (isEditMode) Modifier.focusRequester(focusRequester) else Modifier,
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = {
+                                focusRequesterContent.requestFocus()
+                            }
+                        )
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
                         value = editContent,
                         onValueChange = { editContent = it },
                         label = { Text("내용") },
-                        enabled = isEditMode
+                        enabled = isEditMode,
+                        modifier = Modifier.focusRequester(focusRequesterContent),
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                viewModel.updateItem(item.id, editTitle, editContent)
+                                showDialog = false
+                                keyboardController?.hide()
+                            }
+                        )
                     )
                 }
             }
