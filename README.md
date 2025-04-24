@@ -49,17 +49,23 @@ Jetpack Compose, DataStore, Hilt, ViewModel 등의 최신 안드로이드 아키
 
 </br>
 
+---
+
 </br>
 
 
 ## 리스트화면
 기존 XML에서 사용하던 리스트방식대신 컴포즈에서 Lazy를 이용하여 개발하는 방법을 학습 및 원하는 방향으로 적용시켜보았습니다.
+또한 CRUD를 적용하여 새로만들고 수정, 삭제를 할 수 있는 리스트로 만들어보았습니다.
 
 ### 🔹 사용된 기술 및 패턴
 - **MVVM (Model-View-ViewModel)** 아키텍처
 - **Jetpack Compose**를 활용한 UI 구성
+- **DataStore**를 이용여, 사용자 작성 카드 데이터를 저장 및 불러오기
+- **Gson** 리스트를 JSON으로 직렬화/역직렬화하여 DataStore에 저장.
 
 </br>
+
 ---
 
 </br>
