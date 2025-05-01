@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.androidstudy.alarm.AlarmActivity
 import com.example.androidstudy.calculator.CalculatorActivity
 import com.example.androidstudy.lazyLists.LazyListsActivity
 import com.example.androidstudy.setting.SettingActivity
@@ -66,6 +67,11 @@ class MainActivity : ComponentActivity() {
                         context = context,
                         text = "Lazy 리스트",
                         destination = LazyListsActivity::class.java
+                    )
+                    NavigationButton(
+                        context = context,
+                        text = "알람 만들기",
+                        destination = AlarmActivity::class.java
                     )
                 }
             }
