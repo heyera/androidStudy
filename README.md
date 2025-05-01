@@ -72,13 +72,12 @@ Jetpack Compose, DataStore, Hilt, ViewModel 등의 최신 안드로이드 아키
 
 </br>
 
-## 기술 스택
+## 공통된 기술 스택
 - **언어:** Kotlin
 - **UI:** Jetpack Compose, Material 3
 - **아키텍처:** MVVM (Model-View-ViewModel)
 - **데이터 저장:** DataStore Preferences
 - **의존성 주입:** Hilt (Dagger Hilt)
-- **수식 계산:** Exp4j 라이브러리
 
 </br>
 
