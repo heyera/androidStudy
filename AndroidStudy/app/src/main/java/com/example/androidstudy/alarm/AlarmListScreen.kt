@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -80,4 +81,23 @@ fun AlarmItem(alarm: Alarm, onToggle: () -> Unit) {
     }
 }
 
+@Composable
+fun AlarmListScreenPreview(alarmList: List<Alarm>) {
+    LazyColumn {
+        items(alarmList) { alarm ->
+            AlarmItem(alarm = alarm, onToggle = {})
+        }
+    }
+}
 
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewAlarmListScreenStateless() {
+    AlarmListScreenPreview(
+        listOf(
+            Alarm(1, "06:30", "조깅 알람", true),
+            Alarm(2, "07:00", "출근 준비", false)
+        )
+    )
+}
