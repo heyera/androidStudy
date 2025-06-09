@@ -80,24 +80,3 @@ fun AlarmItem(alarm: Alarm, onToggle: () -> Unit) {
         }
     }
 }
-
-@Composable
-fun AlarmListScreenPreview(alarmList: List<Alarm>) {
-    LazyColumn {
-        items(alarmList) { alarm ->
-            AlarmItem(alarm = alarm, onToggle = {})
-        }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewAlarmListScreenStateless() {
-    AlarmListScreenPreview(
-        listOf(
-            Alarm(1, "06:30", "조깅 알람", true),
-            Alarm(2, "07:00", "출근 준비", false)
-        )
-    )
-}
