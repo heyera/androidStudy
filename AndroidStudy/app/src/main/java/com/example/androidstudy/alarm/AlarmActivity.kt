@@ -11,7 +11,7 @@ class AlarmActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val viewModel: AlarmViewModel = viewModel()
+            val viewModel: AlarmListViewModel = viewModel()
             AlarmListScreen(viewModel = viewModel)
         }
     }

@@ -15,7 +15,7 @@ data class Alarm(
 
 
 @HiltViewModel
-class AlarmViewModel @Inject constructor() : ViewModel() {
+class AlarmListViewModel @Inject constructor() : ViewModel() {
 
     private val _alarmList = MutableStateFlow<List<Alarm>>(
         listOf(
