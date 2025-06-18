@@ -15,7 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun AlarmListScreen(viewModel: AlarmViewModel) {
+fun AlarmListScreen(viewModel: AlarmListViewModel) {
     val alarmList by viewModel.alarmList.collectAsState()
     val context = LocalContext.current
 
