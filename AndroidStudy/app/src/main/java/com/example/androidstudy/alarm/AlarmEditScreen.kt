@@ -1,5 +1,7 @@
 package com.example.androidstudy.alarm
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
@@ -33,6 +37,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -60,14 +70,77 @@ fun AlarmEditScreen(
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text("시간 설정", style = MaterialTheme.typography.titleMedium)
 
+                    val focusManager = LocalFocusManager.current
+                    val minuteFocusRequester = remember { FocusRequester() }
+
+                    val displayHour = hour.ifBlank { "6" }
+                    val displayMinute = minute.ifBlank { "00" }
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         DropdownSelector("오전/오후", listOf("오전", "오후"), timeType, onTimeTypeChange)
-                        DropdownSelector("시", (1..12).map { it.toString() }, hour, onHourChange)
-                        DropdownSelector("분", (0..59).map { it.toString().padStart(2, '0') }, minute, onMinuteChange)
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+
+                        val context = LocalContext.current
+
+                        OutlinedTextField(
+                            value = hour,
+                            onValueChange = {
+                                if (it.all { ch -> ch.isDigit() } && it.length <= 2) {
+                                    val num = it.toIntOrNull()
+                                    if (num != null && num > 12) {
+                                        Toast.makeText(context, "올바르지 않은 값입니다", Toast.LENGTH_SHORT).show()
+                                        Log.d("test","입력값 오류")
+                                    } else {
+                                        onHourChange(it)
+                                    }
+                                }
+                            },
+                            label = { Text("시") },
+                            placeholder = { Text("6") },
+                            modifier = Modifier.width(100.dp),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Next
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onNext = { minuteFocusRequester.requestFocus() }
+                            )
+                        )
+
+
+
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        OutlinedTextField(
+                            value = displayMinute,
+                            onValueChange = {
+                                if (it.all { ch -> ch.isDigit() } && it.length <= 2) {
+                                    onMinuteChange(it)
+                                }
+                            },
+                            label = { Text("분") },
+                            modifier = Modifier
+                                .width(100.dp)
+                                .focusRequester(minuteFocusRequester),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    focusManager.clearFocus()
+                                }
+                            )
+                        )
+
                     }
+
                 }
             }
 
@@ -134,34 +207,35 @@ fun DropdownSelector(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Column {
-        Text(text = label)
-        Box {
-            OutlinedTextField(
-                value = selected,
-                onValueChange = {},
-                modifier = Modifier.width(100.dp),
-                readOnly = true,
-                label = { Text(label) },
-                trailingIcon = {
-                    IconButton(onClick = { expanded = !expanded }) {
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = "드롭다운 열기")
-                    }
+    Box {
+        OutlinedTextField(
+            value = selected,
+            onValueChange = {},
+            modifier = Modifier.width(100.dp),
+            readOnly = true,
+            label = { Text(label) }, // 여기로 label 이동
+            trailingIcon = {
+                IconButton(onClick = { expanded = !expanded }) {
+                    Icon(Icons.Default.ArrowDropDown, contentDescription = "드롭다운 열기")
                 }
-            )
+            }
+        )
 
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                options.forEach { option ->
-                    DropdownMenuItem(
-                        text = { Text(option) },
-                        onClick = {
-                            onSelectedChange(option)
-                            expanded = false
-                        }
-                    )
-                }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            options.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option) },
+                    onClick = {
+                        onSelectedChange(option)
+                        expanded = false
+                    }
+                )
             }
         }
     }
 }
+
 

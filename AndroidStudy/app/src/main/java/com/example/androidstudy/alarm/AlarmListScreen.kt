@@ -1,6 +1,9 @@
 package com.example.androidstudy.alarm
 
+import android.app.Activity
 import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,10 +22,20 @@ fun AlarmListScreen(viewModel: AlarmListViewModel) {
     val alarmList by viewModel.alarmList.collectAsState()
     val context = LocalContext.current
 
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val time = result.data?.getStringExtra("time") ?: return@rememberLauncherForActivityResult
+            val label = result.data?.getStringExtra("label") ?: ""
+            viewModel.addAlarm(time, label)
+        }
+    }
+
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                //TODO 알람 만드는 화면 연결
+                launcher.launch(Intent(context, AlarmEditActivity::class.java))
             }) {
                 Icon(Icons.Default.Add, contentDescription = "알람 추가")
             }
