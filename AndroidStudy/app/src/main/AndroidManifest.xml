@@ -26,13 +26,16 @@
             android:exported="false" />
         <activity
             android:name=".lazyLists.LazyListsActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".alarm.AlarmActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".alarm.AlarmEditActivity"
-            android:exported="false"/>
+            android:exported="false" />
+        <activity
+            android:name=".diary.DiaryActivity"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

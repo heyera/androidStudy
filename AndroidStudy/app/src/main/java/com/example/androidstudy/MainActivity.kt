@@ -23,9 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidstudy.alarm.AlarmActivity
 import com.example.androidstudy.calculator.CalculatorActivity
+import com.example.androidstudy.diary.DiaryActivity
 import com.example.androidstudy.lazyLists.LazyListsActivity
 import com.example.androidstudy.setting.SettingActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -72,6 +72,11 @@ class MainActivity : ComponentActivity() {
                         context = context,
                         text = "알람 만들기",
                         destination = AlarmActivity::class.java
+                    )
+                    NavigationButton(
+                        context = context,
+                        text = "일기(DB활용)",
+                        destination = DiaryActivity::class.java
                     )
                 }
             }
